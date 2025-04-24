@@ -2,11 +2,11 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var count = 0
+    @ObservedObject var counter = CounterModel()
     
     var body: some View {
         VStack(spacing: 24) {
-            Text("Count: \(count) times")
+            Text("Count: \(counter.count) times")
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundColor(.primary)
                 .padding(.vertical, 12)
@@ -15,9 +15,10 @@ struct ContentView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.gray.opacity(0.15))
                 )
+                .accessibilityIdentifier("countLabel")  // Add accessibility identifier here
 
             Button(action: {
-                count += 1
+                counter.increment()
             }) {
                 Text("Click me!")
                     .font(.system(size: 18, weight: .medium))
@@ -29,9 +30,10 @@ struct ContentView: View {
                     )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityIdentifier("incrementButton")  // Add accessibility identifier here
 
             Button(action: {
-                count = 0
+                counter.reset()
             }) {
                 Text("Reset")
                     .font(.system(size: 18, weight: .medium))
@@ -43,6 +45,7 @@ struct ContentView: View {
                     )
             }
             .buttonStyle(PlainButtonStyle())
+            .accessibilityIdentifier("resetButton")  // Add accessibility identifier here
         }
         .padding(30)
         .frame(width: 320)
