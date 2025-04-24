@@ -1,41 +1,69 @@
-//
-//  CounterUITests.swift
-//  CounterUITests
-//
-//  Created by Kamil Kielich on 24/04/2025.
-//
-
 import XCTest
 
-final class CounterUITests: XCTestCase {
+final class ContentViewUITests: XCTestCase {
+
+    var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
+        
+        // Inicjalizacja i uruchomienie aplikacji
+        app = XCUIApplication()
+        app.launch()
+        sleep(1)  // Dodaj opóźnienie po uruchomieniu aplikacji
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        // Zamknięcie aplikacji
+        app.terminate()
+        app = nil
     }
 
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
+    func testCounterIncrement() throws {
+        // 1. Znajdź elementy interfejsu
+        let countLabel = app.staticTexts["countLabel"]
+        let incrementButton = app.buttons["incrementButton"]
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        // Dodaj logowanie
+        print("Count label exists: \(countLabel.exists)")
+        print("Increment button exists: \(incrementButton.exists)")
+
+        // 2. Sprawdź początkową wartość licznika
+        XCTAssertTrue(countLabel.exists, "The count label should exist initially.")
+        XCTAssertEqual(countLabel.label, "Count: 0 times", "Initial count should be 0")
+
+        // 3. Kliknij przycisk "Click me!"
+        incrementButton.tap()
+        sleep(1)  // Dodaj opóźnienie po kliknięciu
+
+        // 4. Sprawdź, czy wartość licznika została zwiększona
+        XCTAssertEqual(countLabel.label, "Count: 1 times", "Count should increment by 1")
     }
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+    func testCounterReset() throws {
+        // 1. Znajdź elementy interfejsu
+        let countLabel = app.staticTexts["countLabel"]
+        let incrementButton = app.buttons["incrementButton"]
+        let resetButton = app.buttons["resetButton"]
+
+        // Dodaj logowanie
+        print("Count label exists: \(countLabel.exists)")
+        print("Increment button exists: \(incrementButton.exists)")
+        print("Reset button exists: \(resetButton.exists)")
+
+        // 2. Kliknij przycisk "Click me!" kilka razy
+        incrementButton.tap()
+        incrementButton.tap()
+        sleep(1)  // Dodaj opóźnienie po kliknięciach
+
+        // 3. Sprawdź, czy licznik został zwiększony
+        XCTAssertEqual(countLabel.label, "Count: 2 times", "Count should increment by 2")
+
+        // 4. Kliknij przycisk "Reset"
+        resetButton.tap()
+        sleep(1)  // Dodaj opóźnienie po kliknięciu
+
+        // 5. Sprawdź, czy licznik został zresetowany
+        XCTAssertEqual(countLabel.label, "Count: 0 times", "Count should reset to 0")
     }
 }

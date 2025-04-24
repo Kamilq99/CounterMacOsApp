@@ -3,7 +3,8 @@ name: MacOS App CI/CD Pipeline
 on:
   push:
     branches:
-      - main 
+      - main
+      - feature/** 
   pull_request:
     branches:
       - main
@@ -12,7 +13,26 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Test First Pipeline run
-        run: echo "Hello World!"
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+      
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: deriveddata-${{ runner.os }}-${{ hashFiles('**/*.xcodeproj/**', '**/*.swift') }}
+          restore-keys: |
+            deriveddata-${{ runner.os }}-
+
+      - name: Build and run unit tests
+        run: |
+          xcodebuild \
+            -project Counter.xcodeproj \
+            -scheme Counter \
+            -sdk macosx \
+            -destination 'platform=macOS' \
+            test \
+            ONLY_ACTIVE_ARCH=YES \
+            CODE_SIGNING_ALLOWED=NO
